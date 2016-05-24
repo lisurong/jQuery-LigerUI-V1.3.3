@@ -8,7 +8,7 @@
     <link href="../../../lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
     .grid-header{
-        clear: both;
+        height: 25px;
     }
     .add{
         margin-bottom: 10px;
@@ -63,9 +63,9 @@
 
             //用户自己业务相关的配置，比如：ajax数据提交到哪
             var userConfig = {
-                showAddRowBtn: true,
-                showAddColBtn: true,
-                showDelColBtn: true,
+                showAddRow: true,
+                showAddCol: true,
+                showDelCol: true,
                 showOption: true,
                 //添加行修改后的处理函数
                 onZQRowEdit:function(row){

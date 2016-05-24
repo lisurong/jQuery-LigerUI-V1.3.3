@@ -13,10 +13,19 @@
 			//初始化总局
 			initLayout($this);
 			//初始化按钮
-			var header = $this.find(".grid-header");
-			buildAddRowBtn(header);
-			buildAddColBtn(header);
-			buildDelColBtn(header);
+			var header = $(".grid-header");//$this.find(".grid-header");
+			if(opts.showAddRow){
+				buildAddRowBtn(header);
+			}
+			if(opts.showAddCol){
+				buildAddColBtn(header);
+			}
+			if(opts.showDelCol){
+				buildDelColBtn(header);
+			}
+			
+			
+			
 			//初始化表格
 			var body = $this.find(".grid-body");
 			if (o.showOption) {
@@ -45,7 +54,7 @@
 	};
 
 	function initLayout(el) {
-		$(el).append('<div class="grid-header"></div>');
+		$(el).before('<div class="grid-header"></div>');
 		$(el).append('<div class="grid-body"></div>');
 	}
 
