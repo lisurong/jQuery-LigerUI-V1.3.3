@@ -68,16 +68,16 @@
                 showDelCol: true,
                 showOption: true,
                 //添加行修改后的处理函数
-                onZQRowEdit:function(row){
-
+                onZQRowEdit:function(data){
+                    console.log(data);
                 },
                 //添加列的处理函数
-                onZQColAdd:function(row){
-
+                onZQColAdd:function(data){
+                    console.log(data);
                 },
                 //删除列的处理函数
-                onZQColDel:function(row){
-
+                onZQColDel:function(data){
+                    console.log(data);
                 },
             }
             config = $.extend({}, config, ligerConfig, userConfig);
@@ -86,31 +86,6 @@
     </script>
 </head>
 <body  style="padding:10px">  
-
-
-
-
-
-
-<div id="maingrid" style="margin-top:20px">
-</div>
-       
-<div id="target1" style="width:200px; margin:3px; display:none;">
-    <label class="add">表头名称：<input type="text" data-attr="display" value="" /></label>
-    <label class="add">字段名字：<input type="text" data-attr="name" value="" /></label>
-    <label class="add">数据类型：
-        <select data-attr="type">
-            <option value="int" selected="selected">整数</option>
-            <option value="text">文本</option>
-        </select>
-    </label>
-    <button id="sure" onclick="addNewCol()">保存</button>
-</div>
-
-<div id="target2" style="width:200px; margin:3px; display:none;">
-    <select id="select"></select>
-    <button id="sure1" onclick="delCol()">删除</button>
-</div>
-
+    <div id="maingrid" style="margin-top:20px"></div>
 </body>
 </html>

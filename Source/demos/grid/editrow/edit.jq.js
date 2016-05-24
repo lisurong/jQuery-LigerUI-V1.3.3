@@ -9,23 +9,22 @@
 			$this = $(this);
 			// 配置信息
 			var o = $.meta ? $.extend({}, opts, $this.data()) : opts;
+			$this.config = o;
 			console.log(o);
 			//初始化总局
-			initLayout($this);
+			initLayout();
 			//初始化按钮
-			var header = $(".grid-header");//$this.find(".grid-header");
-			if(opts.showAddRow){
-				buildAddRowBtn(header);
+			if (opts.showAddRow) {
+				buildAddRowBtn();
 			}
-			if(opts.showAddCol){
-				buildAddColBtn(header);
+			if (opts.showAddCol) {
+				buildAddColBtn();
 			}
-			if(opts.showDelCol){
-				buildDelColBtn(header);
+			if (opts.showDelCol) {
+				buildDelColBtn();
 			}
-			
-			
-			
+			//初始化事件
+			initEvent();
 			//初始化表格
 			var body = $this.find(".grid-body");
 			if (o.showOption) {
@@ -35,41 +34,100 @@
 					render: function(rowdata, rowindex, value) {
 						var h = "";
 						if (!rowdata._editing) {
-							h += "<a class='btn-row-edit'>修改</a> ";
-							h += "<a class='btn-row-del'>删除</a> ";
+							h += "<a class='btn-row-edit' rowindex='" + rowindex + "'>修改</a> ";
+							h += "<a class='btn-row-del' rowindex='" + rowindex + "'>删除</a> ";
 						} else {
-							h += "<a class='btn-row-edit-submit'>提交</a> ";
-							h += "<a class='btn-row-edit-cancel'>取消</a> ";
+							h += "<a class='btn-row-edit-submit' rowindex='" + rowindex + "'>提交</a> ";
+							h += "<a class='btn-row-edit-cancel' rowindex='" + rowindex + "'>取消</a> ";
 						}
 						return h;
 					}
 				}
 				o.columns.push(opt);
 			}
-			$grid = $(body).ligerGrid(o);
+			$this.grid = $(body).ligerGrid(o);
 
 
 
 		});
 	};
 
-	function initLayout(el) {
-		$(el).before('<div class="grid-header"></div>');
-		$(el).append('<div class="grid-body"></div>');
+	function initEvent() {
+		$this.on('click', '.add-row-btn', showAddRow);
+		$this.on('click', '.btn-row-edit', beginRowEdit);
+		$this.on('click', '.btn-row-edit-submit', endEdit);
+		$this.on('click', '.btn-row-del', showAddRow);
 	}
 
+	function beginRowEdit(event) {
+		var rowid = $(event.target).attr('rowindex');
+		console.log(rowid);
+		$this.grid.beginEdit(rowid);
+	}
 
+	function cancelEdit(event) {
+		$this.grid.cancelEdit(rowid);
+	}
 
-	function buildAddRowBtn(el) {
-		$(el).append('<a class="l-button" style="width:120px" onclick="addNewRow()">新增行</a>');
+	function endEdit(event) {
+		//console.log(rowid);
+		var rowid = $(event.target).attr('rowindex');
+		console.log(rowid);
+		$this.grid.endEdit(rowid);
+		var o = $this.grid.getRow(rowid); //编辑后的数据
+		//这里写ajax吧o提交到后台
+		if($this.config.onZQRowEdit){
+			$this.config.onZQRowEdit(o);
+		}
+	}
+
+	function buildAddColUi(el) {
+		var html = [];
+		html.push('<div id="target1" style="width:200px; margin:3px; display:none;">');
+		html.push('  <label class="add">表头名称：<input type="text" data-attr="display" value="" /></label>');
+		html.push('  <label class="add">字段名字：<input type="text" data-attr="name" value="" /></label>');
+		html.push('  <label class="add">数据类型：');
+		html.push('      <select data-attr="type">');
+		html.push('          <option value="int" selected="selected">整数</option>');
+		html.push('          <option value="text">文本</option>');
+		html.push('      </select>');
+		html.push('  </label>');
+		html.push('  <button id="sure" onclick="addNewCol()">保存</button>');
+		html.push('</div>');
+		$(el).after(html.join());
 	};
 
-	function buildAddColBtn(el) {
-		$(el).append('<a class="l-button" style="width:120px" onclick="addCol()">新增列</a>');
+	function buildDelColUi(el) {
+		var html = [];
+		html.push('<div id="target2" style="width:200px; margin:3px; display:none;">');
+		html.push('  <select id="select"></select>');
+		html.push('  <button id="sure1" onclick="delCol()">删除</button>');
+		html.push('</div>');
+		$(el).after(html.join());
 	};
 
-	function buildDelColBtn(el) {
-		$(el).append('<a class="l-button" style="width:120px" onclick="showDelColUI()">删除列</a>');
+	//新增行
+	function showAddRow() {
+		var grid = $this.grid;
+		grid.addRow({});
+	}
+
+	function initLayout() {
+		$this.append('<div class="grid-header"></div>');
+		$this.append('<div class="grid-body"></div>');
+
+	}
+
+	function buildAddRowBtn() {
+		$this.find(".grid-header").append('<a class="l-button add-row-btn" style="width:120px">新增行</a>');
+	};
+
+	function buildAddColBtn() {
+		$this.find(".grid-header").append('<a class="l-button add-col-btn" style="width:120px">新增列</a>');
+	};
+
+	function buildDelColBtn() {
+		$this.find(".grid-header").append('<a class="l-button del-col-btn" style="width:120px">删除列</a>');
 	};
 
 	function addRow(name) {
