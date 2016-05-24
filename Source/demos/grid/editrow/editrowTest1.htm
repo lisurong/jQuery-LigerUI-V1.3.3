@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />  
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="../../../lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+    .add{
+        margin-bottom: 10px;
+        display: block;
+    }
+    </style>
+    <script src="../../../lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerTextBox.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerComboBox.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerGrid.js" type="text/javascript"></script>
+    <script src="../../lib/ligerUI/js/plugins/ligerDateEditor.js" type="text/javascript"></script>
+    <!-- // <script src="../EmployeeData.js" type="text/javascript"></script>  -->
+    <!-- // <script src="../DepartmentData.js" type="text/javascript"></script> -->
+    <script type="text/javascript">
+        var url = '../EmployeeData.json';
+        var all;
+        var rows;
+        var columns;
+        var html = '';
+        var idx;
+        var manager, g;
+        var dialog;
+        var flag = true;
+        $.ajax({
+             type: 'GET',
+             async:false,
+             url: url ,
+            //data: data ,
+            dataType: 'json',
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(errorThrown);
+                //alert(2);
+            },
+            success: function(data){
+                //console.log(data.Rows);
+                console.log(data.Columns);
+                flag = data.Edit;
+                $.each(data.Columns, function(i, item){ 
+                    idx = i;
+                    //console.log(item.display);
+                    html+= '<option value="'+idx+'"">'+item.display+'</option>';            
+                });
+                
+
+                columns = data.Columns;
+                rows = data.Rows;
+                all = data; 
+
+            }
+        });
+
+        // var sexData = [{
+        //     Sex: 1,
+        //     text: '男'
+        // }, {
+        //     Sex: 2,
+        //     text: '女'
+        // }];
+        $(f_initGrid);
+        function f_initGrid(){
+            if(flag){
+                columns.push({
+                    display: '操作',
+                    isSort: false,
+                    render: function(rowdata, rowindex, value) {
+                        var h = "";
+                        if (!rowdata._editing) {
+                            h += "<a href='javascript:beginEdit(" + rowindex + ")'>修改</a> ";
+                            h += "<a href='javascript:deleteRow(" + rowindex + ")'>删除</a> ";
+                        } else {
+                            h += "<a href='javascript:endEdit(" + rowindex + ")'>提交</a> ";
+                            h += "<a href='javascript:cancelEdit(" + rowindex + ")'>取消</a> ";
+                        }
+                        return h;
+                    }
+                });
+            }
+            g = manager = $("#maingrid").ligerGrid({
+                columns: columns,
+                onSelectRow: function(rowdata, rowindex) {
+                    $("#txtrowindex").val(rowindex);
+                },
+                enabledEdit: true,
+                clickToEdit: false,
+                isScroll: false,
+                usePager :false,
+                data: all,
+                width: '100%'
+            });
+        }
+
+        function beginEdit(rowid) {
+            console.log(rowid);
+            manager.beginEdit(rowid);
+        }
+
+        function cancelEdit(rowid) {
+            manager.cancelEdit(rowid);
+        }
+
+        function endEdit(rowid) {
+            //console.log(rowid);
+            manager.endEdit(rowid);
+            var o = manager.getRow(rowid);//编辑后的数据
+            //这里写ajax吧o提交到后台
+            console.log(o);
+        }
+
+        function deleteRow(rowid) {
+            if (confirm('确定删除?')) {
+                manager.deleteRow(rowid);
+            }
+        }
+        var newrowid = 100;
+        //新增行
+        function addNewRow(){
+            var manager = $("#maingrid").ligerGetGridManager();
+            manager.addRow({
+                ID : "",
+                DepartmentID: "",
+                DepartmentName: "",
+                RealName:"",
+                Sex : "",
+                Age : "",
+                IncomeDay: new Date(1306108800000),
+                Phone : "",
+                Address : ""
+            });
+        } 
+        //新增列
+        function addCol(){/**点击新增**/
+             dialog = $.ligerDialog.open({ target: $("#target1") });
+        }
+        function addNewCol(){/**点击保存**/
+            flag = false;
+            idx = idx+1;
+            var colData={};
+            var ediData={};
+            var key,val,type,val_1;
+            $('.add').each(function(){
+                var inputObj = $(this).find('input');
+                 //console.info(inputObj);
+                if(inputObj && inputObj.length!=0){
+                    key = inputObj.attr('data-attr');
+                    val = inputObj.val();
+                    
+                }else{
+                    key = type = $(this).find('select').attr('data-attr');
+                    val = val_1  = $(this).find('select option:selected').val();
+                    ediData[type] = val_1;
+                }
+                //console.info(val);
+                colData[key] = val;
+            }); 
+            colData["editor"] = ediData;
+            console.info(colData);
+            var opt = columns.pop();
+            columns.push(colData);
+            columns.push(opt);
+            //console.log(columns);
+            //这个写ajax把新增后的数据(columns)提交到后台
+            f_initGrid();
+            html+= '<option value="'+idx+'"">'+colData.display+'</option>';
+            dialog.hidden();//关闭dialog 
+
+        }
+        //删除列
+        function showDelColUI(){//点击删除列按钮
+            // console.log(html);
+            // console.log(idx);
+            
+            $('#select').empty();
+            $('#select').append(html);
+            dialog = $.ligerDialog.open({ target: $("#target2") });
+        }
+        function delCol(){//点击删除按钮
+            flag = false;
+            var selVal= $('#select option:selected').attr('value');
+            console.log(selVal);
+            columns.splice(selVal,1);
+            console.log(columns);
+            //这个写ajax把删除后的数据(columns)提交到后台,成功后刷新表格
+            f_initGrid();
+            dialog.hidden();//关闭dialog 
+
+
+        }
+    </script>
+</head>
+<body  style="padding:10px">  
+<a class="l-button" style="width:120px" onclick="addNewRow()">新增行</a>
+<a class="l-button" style="width:120px" onclick="addCol()">新增列</a>
+<a class="l-button" style="width:120px" onclick="showDelColUI()">删除列</a>
+
+<div id="maingrid" style="margin-top:20px"></div> <br />
+       
+<div id="target1" style="width:200px; margin:3px; display:none;">
+    <label class="add">表头名称：<input type="text" data-attr="display" value="" /></label>
+    <label class="add">字段名字：<input type="text" data-attr="name" value="" /></label>
+    <label class="add">数据类型：
+        <select data-attr="type">
+            <option value="int" selected="selected">整数</option>
+            <option value="text">文本</option>
+        </select>
+    </label>
+    <button id="sure" onclick="addNewCol()">保存</button>
+</div>
+<div id="target2" style="width:200px; margin:3px; display:none;">
+    <select id="select"></select>
+    <button id="sure1" onclick="delCol()">删除</button>
+</div>
+</body>
+</html>

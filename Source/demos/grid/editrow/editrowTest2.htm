@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />  
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="../../../lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+    .grid-header{
+        clear: both;
+    }
+    .add{
+        margin-bottom: 10px;
+        display: block;
+    }
+    .grid-header .l-button{
+        width: 80px;
+        float: left;
+        margin-left: 6px;
+    }
+    .grid-header .l-button{
+        /*clear: both;*/
+    }
+    </style>
+    <script src="../../../lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerTextBox.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerComboBox.js" type="text/javascript"></script>
+    <script src="../../../lib/ligerUI/js/plugins/ligerGrid.js" type="text/javascript"></script>
+    <!-- // <script src="../../lib/ligerUI/js/plugins/ligerDateEditor.js" type="text/javascript"></script> -->
+    <!-- // <script src="../EmployeeData.js" type="text/javascript"></script>  -->
+    <!-- // <script src="../DepartmentData.js" type="text/javascript"></script> -->
+    <script src="./edit.jq.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            var url = '../EmployeeData.json';
+            //ligerGrid的columns,data信息
+            var config;
+            $.ajax({
+                type: 'GET',
+                async:false,
+                url: url ,
+                dataType: 'json',
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    console.log(errorThrown);
+                },
+                success: function(data){
+                    config = data;
+                }
+            });
+
+            //用户根据ligerGrid可以自定配置
+            var ligerConfig = {
+                enabledEdit: true,
+                clickToEdit: false,
+                isScroll: false,
+                usePager :false,
+                width: '100%',
+            }
+
+            //用户自己业务相关的配置，比如：ajax数据提交到哪
+            var userConfig = {
+                showAddRowBtn: true,
+                showAddColBtn: true,
+                showDelColBtn: true,
+                showOption: true,
+                //添加行修改后的处理函数
+                onZQRowEdit:function(row){
+
+                },
+                //添加列的处理函数
+                onZQColAdd:function(row){
+
+                },
+                //删除列的处理函数
+                onZQColDel:function(row){
+
+                },
+            }
+            config = $.extend({}, config, ligerConfig, userConfig);
+            $('#maingrid').zqGrid(config);  
+        });
+    </script>
+</head>
+<body  style="padding:10px">  
+
+
+
+
+
+
+<div id="maingrid" style="margin-top:20px">
+</div>
+       
+<div id="target1" style="width:200px; margin:3px; display:none;">
+    <label class="add">表头名称：<input type="text" data-attr="display" value="" /></label>
+    <label class="add">字段名字：<input type="text" data-attr="name" value="" /></label>
+    <label class="add">数据类型：
+        <select data-attr="type">
+            <option value="int" selected="selected">整数</option>
+            <option value="text">文本</option>
+        </select>
+    </label>
+    <button id="sure" onclick="addNewCol()">保存</button>
+</div>
+
+<div id="target2" style="width:200px; margin:3px; display:none;">
+    <select id="select"></select>
+    <button id="sure1" onclick="delCol()">删除</button>
+</div>
+
+</body>
+</html>
