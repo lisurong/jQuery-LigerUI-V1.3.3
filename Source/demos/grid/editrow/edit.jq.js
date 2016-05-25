@@ -19,6 +19,7 @@
 			}
 			if (opts.showAddCol) {
 				buildAddColBtn();
+				
 			}
 			if (opts.showDelCol) {
 				buildDelColBtn();
@@ -51,37 +52,103 @@
 
 		});
 	};
-
+	//绑定按钮比事件函数
 	function initEvent() {
-		$this.on('click', '.add-row-btn', showAddRow);
-		$this.on('click', '.btn-row-edit', beginRowEdit);
-		$this.on('click', '.btn-row-edit-submit', endEdit);
-		$this.on('click', '.btn-row-del', showAddRow);
-	}
+		$this.on('click', '.add-row-btn', showAddRow); //新增行
+		$this.on('click', '.btn-row-edit', beginRowEdit); //修改行
+		$this.on('click', '.btn-row-edit-submit', endEdit); //提交修改
+		$this.on('click', '.btn-row-del', deleteRow); //删除行
+		$this.on('click', '.btn-row-edit-cancel', cancelEdit); //取消行修改
+		$this.on('click', '.add-col-btn', addCol); //新增列弹框
+		$this.on('click', '.del-col-btn', delCol); //删除列弹框
+		$(document).on('click', '.sure-col', addNewColUI); //保存新增列
+		$(document).on('click', '.del-col', delColUI); //删除列
 
+	}
+	//点击修改
 	function beginRowEdit(event) {
 		var rowid = $(event.target).attr('rowindex');
 		console.log(rowid);
 		$this.grid.beginEdit(rowid);
 	}
-
+	//点击取消
 	function cancelEdit(event) {
 		$this.grid.cancelEdit(rowid);
 	}
-
+	//提交修改
 	function endEdit(event) {
 		//console.log(rowid);
 		var rowid = $(event.target).attr('rowindex');
 		console.log(rowid);
 		$this.grid.endEdit(rowid);
 		var o = $this.grid.getRow(rowid); //编辑后的数据
-		//这里写ajax吧o提交到后台
+		//o是要提交到后台的数据
 		if($this.config.onZQRowEdit){
 			$this.config.onZQRowEdit(o);
 		}
 	}
+	//删除行
+	 function deleteRow(event) {
+	 	var rowid = $(event.target).attr('rowindex');
+        if (confirm('确定删除?')) {
+        	var o = $this.grid.getRow(rowid); //编辑后的数据
+            $this.grid.deleteRow(rowid);
+            if($this.config.onZQRowDel){
+            	$this.config.onZQRowDel(o);
+            }
 
-	function buildAddColUi(el) {
+        }
+    }
+    //取消行修改
+    function cancelEdit(event) {
+    	var rowid = $(event.target).attr('rowindex');
+        $this.grid.cancelEdit(rowid);
+    }
+    //新增行
+	function showAddRow() {
+		var grid = $this.grid;
+		grid.addRow({});
+	}
+    //新增列
+     function addCol(){/**点击新增**/
+     	buildAddColUi();
+        dialog = $.ligerDialog.open({ target: $("#target1") });
+
+    }
+    //保存新增列
+    function addNewColUI(){/**点击保存**/
+         console.info('新增列');
+
+
+
+
+
+    }
+    //删除列
+    function delCol(){//点击删除列按钮        
+        // $('#select').empty();
+        // $('#select').append(html);
+        buildDelColUi();
+        dialog = $.ligerDialog.open({ target: $("#target2") });
+    }
+    function delColUI(){//点击删除按钮
+       console.info('删除列');
+
+
+
+
+
+
+    }
+
+    //初始化两个容器
+	function initLayout() {
+		$this.append('<div class="grid-header"></div>');
+		$this.append('<div class="grid-body"></div>');
+
+	}
+    //新增列弹框html
+	function buildAddColUi() {
 		var html = [];
 		html.push('<div id="target1" style="width:200px; margin:3px; display:none;">');
 		html.push('  <label class="add">表头名称：<input type="text" data-attr="display" value="" /></label>');
@@ -92,36 +159,24 @@
 		html.push('          <option value="text">文本</option>');
 		html.push('      </select>');
 		html.push('  </label>');
-		html.push('  <button id="sure" onclick="addNewCol()">保存</button>');
+		html.push('  <button id="sure" class="sure-col">保存</button>');
 		html.push('</div>');
-		$(el).after(html.join());
+		$this.after(html.join(''));
 	};
-
-	function buildDelColUi(el) {
+	//删除列弹框html
+	function buildDelColUi() {
 		var html = [];
 		html.push('<div id="target2" style="width:200px; margin:3px; display:none;">');
 		html.push('  <select id="select"></select>');
-		html.push('  <button id="sure1" onclick="delCol()">删除</button>');
+		html.push('  <button id="sure1" class="del-col">删除</button>');
 		html.push('</div>');
-		$(el).after(html.join());
+		$this.after(html.join(''));
 	};
-
-	//新增行
-	function showAddRow() {
-		var grid = $this.grid;
-		grid.addRow({});
-	}
-
-	function initLayout() {
-		$this.append('<div class="grid-header"></div>');
-		$this.append('<div class="grid-body"></div>');
-
-	}
-
+	//新增行按钮
 	function buildAddRowBtn() {
 		$this.find(".grid-header").append('<a class="l-button add-row-btn" style="width:120px">新增行</a>');
 	};
-
+	//新增列按钮
 	function buildAddColBtn() {
 		$this.find(".grid-header").append('<a class="l-button add-col-btn" style="width:120px">新增列</a>');
 	};
@@ -129,7 +184,7 @@
 	function buildDelColBtn() {
 		$this.find(".grid-header").append('<a class="l-button del-col-btn" style="width:120px">删除列</a>');
 	};
-
+	//删除列按钮
 	function addRow(name) {
 		if (window.console && window.console.log)
 			window.console.log('zqGrid selection count: ' + $obj.size());
