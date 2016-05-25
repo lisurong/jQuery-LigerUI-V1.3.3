@@ -45,20 +45,20 @@
                 url: url ,
                 dataType: 'json',
                 error: function(XMLHttpRequest, textStatus, errorThrown){
-                    console.log(errorThrown);
+                    //console.log(errorThrown);
                 },
                 success: function(data){
                     config = data;
                     var sex = config.data.Rows;
                     $.each(sex, function(i, item){      
-                          //console.info(item.Sex);
+                          ////console.info(item.Sex);
                           if(item.Sex == 1){                            
                              item.Sex = '男';
                           }else{
                             item.Sex = '女';
                           }
                 　　}); 
-                    console.info(config)
+                    //console.info(config)
                 }
             });
 
@@ -79,11 +79,11 @@
                 showOption: true,
                 //删除行的处理函数
                 onZQRowDel:function(data){
-                   //console.log(data);
+                   ////console.log(data);
                 },
                 //添加行修改后的处理函数
                 onZQRowEdit:function(data){
-                    //console.log(data);
+                    ////console.log(data);
                 },
                 //添加列的处理函数
                 onZQColAdd:function(data){
@@ -91,7 +91,7 @@
                 },
                 //删除列的处理函数
                 onZQColDel:function(data){
-                    //console.log(data);
+                    ////console.log(data);
                 },
             }
             config = $.extend({}, config, ligerConfig, userConfig);

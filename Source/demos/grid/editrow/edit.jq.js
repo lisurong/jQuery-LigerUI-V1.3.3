@@ -10,7 +10,7 @@
 			// 配置信息
 			var o = $.meta ? $.extend({}, opts, $this.data()) : opts;
 			$this.config = o;
-			console.log(o);
+			//console.log(o);
 			//初始化总局
 			initLayout();
 			//初始化按钮
@@ -68,7 +68,7 @@
 	//点击修改
 	function beginRowEdit(event) {
 		var rowid = $(event.target).attr('rowindex');
-		console.log(rowid);
+		//console.log(rowid);
 		$this.grid.beginEdit(rowid);
 	}
 	//点击取消
@@ -77,9 +77,9 @@
 	}
 	//提交修改
 	function endEdit(event) {
-		//console.log(rowid);
+		////console.log(rowid);
 		var rowid = $(event.target).attr('rowindex');
-		console.log(rowid);
+		//console.log(rowid);
 		$this.grid.endEdit(rowid);
 		var o = $this.grid.getRow(rowid); //编辑后的数据
 		//o是要提交到后台的数据
@@ -117,7 +117,7 @@
     }
     //保存新增列
     function addNewColUI(){/**点击保存**/
-         console.info('新增列');
+         //console.info('新增列');
 
 
 
@@ -132,7 +132,7 @@
         dialog = $.ligerDialog.open({ target: $("#target2") });
     }
     function delColUI(){//点击删除按钮
-       console.info('删除列');
+       //console.info('删除列');
 
 
 
@@ -184,14 +184,14 @@
 	function buildDelColBtn() {
 		$this.find(".grid-header").append('<a class="l-button del-col-btn" style="width:120px">删除列</a>');
 	};
-	//删除列按钮
-	function addRow(name) {
-		if (window.console && window.console.log)
-			window.console.log('zqGrid selection count: ' + $obj.size());
-		if (config.addRowHandler) {
-			config.addRowHandler(row);
-		}
-	};
+	// //删除列按钮
+	// function addRow(name) {
+	// 	if (window.console && window.console.log)
+	// 		window.//console.log('zqGrid selection count: ' + $obj.size());
+	// 	if (config.addRowHandler) {
+	// 		config.addRowHandler(row);
+	// 	}
+	// };
 	// 定义暴露format函数  
 	$.fn.zqGrid.format = function(txt) {
 		return '<strong>' + txt + '</strong>';
