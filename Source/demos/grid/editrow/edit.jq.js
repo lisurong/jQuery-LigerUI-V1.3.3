@@ -149,8 +149,20 @@
 	}
 
 	function delColUI() { //点击删除按钮
-		//console.info('删除列');
-
+		var selName = $('.showSelect option:selected').attr('value');	
+		//console.log(selName);
+		//循环删除
+		var arrName = $this.config.columns;
+		$.each(arrName, function(i, item){ 			
+            if(item.name && item.name == selName){	
+            	arrName.splice(i,1);
+            }
+                                
+        });
+        //console.info(arrName)
+        if($this.config.onZQColDel){
+        	onZQColDel(arrName);
+        }
 
 
 	}
@@ -168,6 +180,16 @@
 	function delColBtnClickHandler() {
 		//点击删除列按钮
 		buildDelColDailog();
+		var array = $this.config.columns;
+		var showDisplay = "";
+		$.each(array, function(i, item){
+			if(item.name){
+            	showDisplay += "<option value="+item.name+">"+(item.display)+"</option>";
+			} 
+            
+    　　}); 
+		$('.showSelect').append(showDisplay);
+
 		dialog = $.ligerDialog.open({
 			target: $this.find(".del-col-box")
 		});
@@ -200,7 +222,7 @@
 	function buildDelColDailog() {
 		var html = [];
 		html.push('<div class="del-col-box" style="width:200px; margin:3px; display:none;">');
-		html.push('  <select class="select"></select>');
+		html.push('  <select class="select showSelect"></select>');
 		html.push('  <button class="sure sure-del-col">删除</button>');
 		html.push('</div>');
 		$this.find('.option-body').empty().append(html.join(''));
