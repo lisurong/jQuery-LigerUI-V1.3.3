@@ -87,9 +87,16 @@
 		//console.log(rowid);
 		$this.grid.endEdit(rowid);
 		var o = $this.grid.getRow(rowid); //编辑后的数据
+		var obj2 = $.extend(true, {}, o);
+		//console.info(obj2)
+        if(o.Sex == 1){                            
+            o.Sex = '男';
+        }else{
+            o.Sex = '女';
+        }    
 		//o是要提交到后台的数据
 		if ($this.config.onZQRowEdit) {
-			$this.config.onZQRowEdit(o);
+			$this.config.onZQRowEdit(obj2);
 		}
 	}
 	//删除行
@@ -153,18 +160,21 @@
 		//console.log(selName);
 		//循环删除
 		var arrName = $this.config.columns;
+		var delIndex = -1;
 		$.each(arrName, function(i, item){ 			
             if(item.name && item.name == selName){	
-            	arrName.splice(i,1);
-            }
-                                
+            	delIndex = i;
+            }   
         });
-        //console.info(arrName)
+        var removed = arrName.splice(delIndex,1);
+        console.info(removed)
         if($this.config.onZQColDel){
-        	onZQColDel(arrName);
+        	$this.config.onZQColDel(removed);
         }
-
-
+         //重新填充select
+		 //fullDelColSelectOption();
+         buildGrid();
+         $this.dialog.close();
 	}
 
 	//新增列
@@ -181,6 +191,7 @@
 		//点击删除列按钮
 		buildDelColDailog();
 		var array = $this.config.columns;
+		//console.info(array)
 		var showDisplay = "";
 		$.each(array, function(i, item){
 			if(item.name){
@@ -190,7 +201,7 @@
     　　}); 
 		$('.showSelect').append(showDisplay);
 
-		dialog = $.ligerDialog.open({
+		$this.dialog = $.ligerDialog.open({
 			target: $this.find(".del-col-box")
 		});
 	}
