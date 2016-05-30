@@ -1,10 +1,5 @@
 ﻿{
     "columns": [{
-        "display": "主键",
-        "name": "ID",
-        "type": "int",
-        "frozen": true
-    }, {
         "display": "名字",
         "name": "RealName",
         "editor": {
