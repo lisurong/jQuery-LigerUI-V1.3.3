@@ -128,30 +128,49 @@
 		var display = $form.find('input[data-attr="display"]').val();
 		var name = $form.find('input[data-attr="name"]').val();
 		var type = $form.find('select').val();
-		var col = {
-			"display": display,
-			"name": name,
-			"type": type,
-			"editor": {
-				"type": type
-			}
-		}
-		//console.log(col);
 		var columns = $this.config.columns;
-		var opt = columns.pop();
-		columns.push(col);
-		columns.push(opt);
-		buildGrid();
-		$this.dialog.close();
-		if ($this.config.onZQColAdd) {
-			$this.config.onZQColAdd({
+		var colName = [];
+		$.each(columns, function(i, item){  
+		   var n =item.name;
+		   if(n){
+	       		colName.push(n); 
+	       }     
+	　　});  
+		var str = ","+colName.join(",")+",";
+		var num = str.indexOf(","+name+",");
+		if(display == ''){
+			$form.find('.display').text('').append('不能为空');
+		}if(name == ''){
+			$form.find('.name').text('').append('不能为空');
+		}if(num != -1){
+			$form.find('.name').text('').append('字段名不能重复');
+		}else{
+
+			var col = {
 				"display": display,
 				"name": name,
 				"type": type,
 				"editor": {
 					"type": type
 				}
-			});
+			}
+			//console.log(col);
+			var columns = $this.config.columns;
+			var opt = columns.pop();
+			columns.push(col);
+			columns.push(opt);
+			buildGrid();
+			$this.dialog.close();
+			if ($this.config.onZQColAdd) {
+				$this.config.onZQColAdd({
+					"display": display,
+					"name": name,
+					"type": type,
+					"editor": {
+						"type": type
+					}
+				});
+			}
 		}
 	}
 
@@ -216,10 +235,10 @@
 	//新增列弹框html
 	function buildAddColDailog() {
 		var html = [];
-		html.push('<div class="add-col-box form" style="width:200px; margin:3px; display:none;">');
-		html.push('  <label class="add">表头名称：<input type="text" data-attr="display" value="" /></label>');
-		html.push('  <label class="add">字段名字：<input type="text" data-attr="name" value="" /></label>');
-		html.push('  <label class="add">数据类型：');
+		html.push('<div class="add-col-box form" style=" margin:3px; display:none;width:320px;">');
+		html.push('  <label class="add"><em style="color:red">*</em>表头名称：<input type="text" data-attr="display" value="" /><span class="display" style="color:red"><span></label>');
+		html.push('  <label class="add"><em style="color:red">*</em>字段名字：<input type="text" data-attr="name" value="" /><span class="name" style="color:red"><span></label>');
+		html.push('  <label class="add"><em style="color:red">*</em>数据类型：');
 		html.push('      <select data-attr="type">');
 		html.push('          <option value="int">整数</option>');
 		html.push('          <option value="text">文本</option>');
