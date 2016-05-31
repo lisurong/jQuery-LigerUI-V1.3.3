@@ -89,11 +89,11 @@
 		var o = $this.grid.getRow(rowid); //编辑后的数据
 		var obj2 = $.extend(true, {}, o);
 		//console.info(obj2)
-        if(o.Sex == 1){                            
-            o.Sex = '男';
-        }else{
-            o.Sex = '女';
-        }    
+		if (o.Sex == 1) {
+			o.Sex = '男';
+		} else {
+			o.Sex = '女';
+		}
 		//o是要提交到后台的数据
 		if ($this.config.onZQRowEdit) {
 			$this.config.onZQRowEdit(obj2);
@@ -130,23 +130,33 @@
 		var type = $form.find('select').val();
 		var columns = $this.config.columns;
 		var colName = [];
-		$.each(columns, function(i, item){  
-		   var n =item.name;
-		   if(n){
-	       		colName.push(n); 
-	       }     
-	　　});  
-		var str = ","+colName.join(",")+",";
-		var num = str.indexOf(","+name+",");
-		if(display == ''){
+		$.each(columns, function(i, item) {
+			var n = item.name;
+			if (n) {
+				colName.push(n);
+			}　　
+		});
+		//验证区
+		var pass = true;
+		var str = "," + colName.join(",") + ",";
+		var num = str.indexOf("," + name + ",");
+		if (display == '') {
+			pass = false;
 			$form.find('.display').text('').append('不能为空');
-		}if(name == ''){
+		}
+		if (name == '') {
+			pass = false;
 			$form.find('.name').text('').append('不能为空');
-		}if(num != -1){
+		}
+		if (num != -1) {
+			pass = false;
 			$form.find('.name').text('').append('字段名不能重复');
-		}else{
-
-			var col = {
+		}
+		if (!pass) {
+			return;
+		}
+		//验证通过后的处理区
+		var col = {
 				"display": display,
 				"name": name,
 				"type": type,
@@ -155,45 +165,44 @@
 				}
 			}
 			//console.log(col);
-			var columns = $this.config.columns;
-			var opt = columns.pop();
-			columns.push(col);
-			columns.push(opt);
-			buildGrid();
-			$this.dialog.close();
-			if ($this.config.onZQColAdd) {
-				$this.config.onZQColAdd({
-					"display": display,
-					"name": name,
-					"type": type,
-					"editor": {
-						"type": type
-					}
-				});
-			}
+		var columns = $this.config.columns;
+		var opt = columns.pop();
+		columns.push(col);
+		columns.push(opt);
+		buildGrid();
+		$this.dialog.close();
+		if ($this.config.onZQColAdd) {
+			$this.config.onZQColAdd({
+				"display": display,
+				"name": name,
+				"type": type,
+				"editor": {
+					"type": type
+				}
+			});
 		}
 	}
 
 	function delColUI() { //点击删除按钮
-		var selName = $('.showSelect option:selected').attr('value');	
+		var selName = $('.showSelect option:selected').attr('value');
 		//console.log(selName);
 		//循环删除
 		var arrName = $this.config.columns;
 		var delIndex = -1;
-		$.each(arrName, function(i, item){ 			
-            if(item.name && item.name == selName){	
-            	delIndex = i;
-            }   
-        });
-        var removed = arrName.splice(delIndex,1);
-        console.info(removed)
-        if($this.config.onZQColDel){
-        	$this.config.onZQColDel(removed);
-        }
-         //重新填充select
-		 //fullDelColSelectOption();
-         buildGrid();
-         $this.dialog.close();
+		$.each(arrName, function(i, item) {
+			if (item.name && item.name == selName) {
+				delIndex = i;
+			}
+		});
+		var removed = arrName.splice(delIndex, 1);
+		console.info(removed)
+		if ($this.config.onZQColDel) {
+			$this.config.onZQColDel(removed);
+		}
+		//重新填充select
+		//fullDelColSelectOption();
+		buildGrid();
+		$this.dialog.close();
 	}
 
 	//新增列
@@ -212,12 +221,13 @@
 		var array = $this.config.columns;
 		//console.info(array)
 		var showDisplay = "";
-		$.each(array, function(i, item){
-			if(item.name){
-            	showDisplay += "<option value="+item.name+">"+(item.display)+"</option>";
-			} 
-            
-    　　}); 
+		$.each(array, function(i, item) {
+			if (item.name) {
+				showDisplay += "<option value=" + item.name + ">" + (item.display) + "</option>";
+			}
+
+			　　
+		});
 		$('.showSelect').append(showDisplay);
 
 		$this.dialog = $.ligerDialog.open({
